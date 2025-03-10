@@ -12,7 +12,7 @@
 
 // Allowed origins for CORS
 // Allow from any origin
-$allowed_origins = ['https://portal.damnmodz.com', 'https://damnmodz.com', 'http://localhost:5173'];
+$allowed_origins = ['https://portal.damnmodz.com', 'https://damnmodz.com', 'http://localhost:5173','http://localhost:5173'];
 //$allowed_domains = ['portal.damnmodz.com', 'damnmodz.com', 'localhost:5173'];
 
 // Check the Referer header
@@ -67,7 +67,8 @@ session_start();
 define('DB_HOST', 'localhost');
 define('DB_USERNAME', 'root');
 define('DB_NAME', 'damnmodz');
-define('DB_PASSWORD', '');
+define('DB_PASSWORD', 'x7Rxc^Qy5xwKq');
+define('PORT', '3345');
 
 // define('DB_HOST', 'localhost');
 // define('DB_USERNAME', 'ttgstaff_root');
