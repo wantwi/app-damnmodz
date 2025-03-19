@@ -5,6 +5,7 @@
         "pragmarx/google2fa": "^8.0",
         "endroid/qr-code": "^4.8",
         "workerman/workerman": "^4.1",
-      "ext-json": "*"
+      "ext-json": "*",
+      "ext-pdo": "*"
     }
 }
