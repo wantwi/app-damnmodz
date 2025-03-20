@@ -1,16 +1,20 @@
 <?php
 
-require_once '../config.php';
-require_once '../class/AuthMiddleware.php';
 
-header('Content-Type: application/json');
+use config\Config;
 
-$authData = AuthMiddleware::validateToken();
-$res = ["status" => false, "message" => "Unauthorized"];
+require_once '../config/Config.php';
+
+$config = Config::getInstance();
+$pdo = $config->getPDO();
+$dbHandler = $config->getDbHandler();
+$smtpHost = $config->getSetting('smtp');
+$authUser = $config->getAuthUser();
+
+$res = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     if (isset($authData['id'])) {
-
         $user = $dbHandler->selectData('users', 'id', $authData['id']);
 
         if (!empty($user)) {
@@ -75,6 +79,83 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 }
 
 echo json_encode($res);
+
+
+
+
+//global $dbHandler, $pdo;
+//require_once '../class/AuthMiddleware.php';
+//
+//$authData = AuthMiddleware::validateToken();
+//$res = [];
+//
+//if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+//    if (isset($authData['id'])) {
+//
+//        $user = $dbHandler->selectData('users', 'id', $authData['id']);
+//
+//        if (!empty($user)) {
+//            if ($user['type'] === 'admin') {
+//                $newOrder = $dbHandler->existingData('products', 'status', 'new');
+//                $ongoing = $dbHandler->existingData('products', 'status', 'ongoing');
+//                $orders = $dbHandler->countData('products', '');
+//                $users = $dbHandler->existingData('users', 'type', 'user');
+//                $completedOrders = $dbHandler->countData('products', "WHERE status = 'completed'");
+//
+//                if (isset($_GET['get']) && isset($_GET['id'])) {
+//                    $supplierId = (int)$_GET['id']; // Convert to integer for security
+//                    $supplierOrder = $dbHandler->countData('products', "WHERE supplier_id= '$supplierId'");
+//                    $completedOrders = $dbHandler->countData('products', "WHERE status = 'completed'");
+//                }
+//
+//                $res = [
+//                    "status" => true,
+//                    "data" => [
+//                        'suppliers' => $users[0],
+//                        'totalOrders' => $orders[0],
+//                        'ongoingOrders' => $ongoing[0],
+//                        'newOrders' => $newOrder[0],
+//                        "completedOrders" => $completedOrders[0],
+//                    ]
+//                ];
+//            }
+//
+//            if ($user['type'] === 'user') {
+//                $supplierId = (int)$user['id']; // Convert to integer for security
+//
+//                $selectQuery = "SELECT p.*, MAX(oc.wc_category_id) AS category_id
+//                                FROM products p
+//                                JOIN orders o ON p.order_id = o.wc_id
+//                                JOIN orders_categories oc ON o.wc_id = oc.wc_order_id
+//                                JOIN supplier_categories sc ON oc.wc_category_id = sc.wc_category_id
+//                                WHERE sc.user_id = :supplier_id AND p.status = 'new'
+//                                GROUP BY p.id;";
+//
+//                $selectStmt = $pdo->prepare($selectQuery);
+//                $selectStmt->execute([':supplier_id' => $supplierId]);
+//                $newOrders = $selectStmt->fetchAll(PDO::FETCH_ASSOC);
+//
+//                $user = $dbHandler->selectData('users', 'id', $supplierId);
+//                $orders = $dbHandler->countData('products', "WHERE supplier_id = $supplierId");
+//                $ongoing = $dbHandler->countData('products', "WHERE status = 'ongoing' AND supplier_id = $supplierId");
+//                $completedOrders = $dbHandler->countData('products', "WHERE status = 'completed' AND supplier_id = $supplierId");
+//
+//                $res = [
+//                    "status" => true,
+//                    "data" => [
+//                        'balance' => $user['balance'],
+//                        'totalOrders' => $orders[0],
+//                        'ongoingOrders' => $ongoing[0],
+//                        'newOrders' => count($newOrders),
+//                        "completedOrders" => $completedOrders[0],
+//                    ]
+//                ];
+//            }
+//        }
+//    }
+//}
+//
+//echo json_encode($res);
 
 
 //require_once '../config.php';

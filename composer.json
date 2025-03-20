@@ -6,6 +6,7 @@
         "endroid/qr-code": "^4.8",
         "workerman/workerman": "^4.1",
       "ext-json": "*",
-      "ext-pdo": "*"
+      "ext-pdo": "*",
+        "vlucas/phpdotenv": "^5.6"
     }
 }
