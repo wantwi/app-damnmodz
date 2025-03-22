@@ -50,7 +50,6 @@ final class DebugResult extends AbstractResult
             $debugLines[] = 'Logo path: '.$this->logo->getPath();
             $debugLines[] = 'Logo resize to width: '.$this->logo->getResizeToWidth();
             $debugLines[] = 'Logo resize to height: '.$this->logo->getResizeToHeight();
-            $debugLines[] = 'Logo punchout background: '.($this->logo->getPunchoutBackground() ? 'true' : 'false');
         }
 
         if (isset($this->label)) {

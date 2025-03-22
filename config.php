@@ -67,7 +67,8 @@
 define('DB_HOST', 'localhost');
 define('DB_USERNAME', 'root');
 define('DB_NAME', 'damnmodz');
-define('DB_PASSWORD', '');
+define('DB_PASSWORD', 'x7Rxc^Qy5xwKq');
+define('PORT', '3345');
 //
 //// define('DB_HOST', 'localhost');
 //// define('DB_USERNAME', 'ttgstaff_root');
