@@ -12,10 +12,8 @@ class DatabaseHandler
         }
     }
 
-    /**
-     * Check if a table exists in the database.
-     */
-    protected function tableExists($table)
+
+    protected function tableExists($table): bool
     {
         $stmt = $this->pdo->prepare("SHOW TABLES LIKE :table");
         $stmt->bindParam(':table', $table);
@@ -23,15 +21,91 @@ class DatabaseHandler
         return $stmt->rowCount() > 0;
     }
 
-    /**
-     * Check if a column exists in a table.
-     */
-    protected function columnExists($table, $column)
+
+    protected function columnExists($table, $column): bool
     {
         $stmt = $this->pdo->prepare("SHOW COLUMNS FROM `$table` LIKE :column");
         $stmt->bindParam(':column', $column);
         $stmt->execute();
         return $stmt->rowCount() > 0;
+    }
+
+    public function selectAsync($dbTable, array $conditions = [], $fetchAll = false)
+    {
+        $whereClauses = [];
+        $params = [];
+
+        foreach ($conditions as $column => $value) {
+            $whereClauses[] = "`$column` = :$column";
+            $params[":$column"] = $value;
+        }
+
+        $whereSql = $whereClauses ? "WHERE " . implode(" AND ", $whereClauses) : "";
+        $query = "SELECT * FROM `$dbTable` $whereSql";
+
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute($params);
+
+        return $fetchAll ? $stmt->fetchAll(PDO::FETCH_ASSOC) : $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function insertAsync($dbTable, array $data)
+    {
+        $columns = implode("`, `", array_keys($data));
+        $placeholders = ":" . implode(", :", array_keys($data));
+        $query = "INSERT INTO `$dbTable` (`$columns`) VALUES ($placeholders)";
+
+        $stmt = $this->pdo->prepare($query);
+        return $stmt->execute($data) ? $this->pdo->lastInsertId() : false;
+    }
+
+    public function updateAsync($dbTable, array $data, array $conditions): bool
+    {
+        $setClauses = [];
+        $whereClauses = [];
+        $params = [];
+
+        foreach ($data as $column => $value) {
+            $setClauses[] = "`$column` = :set_$column";
+            $params[":set_$column"] = $value;
+        }
+
+        foreach ($conditions as $column => $value) {
+            $whereClauses[] = "`$column` = :where_$column";
+            $params[":where_$column"] = $value;
+        }
+
+        if (empty($whereClauses)) {
+            throw new Exception("Update must have a WHERE condition to prevent mass updates.");
+        }
+
+        $setSql = implode(", ", $setClauses);
+        $whereSql = implode(" AND ", $whereClauses);
+        $query = "UPDATE `$dbTable` SET $setSql WHERE $whereSql";
+
+        $stmt = $this->pdo->prepare($query);
+        return $stmt->execute($params);
+    }
+
+    public function deleteAsync($dbTable, array $conditions): bool
+    {
+        $whereClauses = [];
+        $params = [];
+
+        foreach ($conditions as $column => $value) {
+            $whereClauses[] = "`$column` = :$column";
+            $params[":$column"] = $value;
+        }
+
+        if (empty($whereClauses)) {
+            throw new Exception("Delete must have a WHERE condition to prevent mass deletions.");
+        }
+
+        $whereSql = implode(" AND ", $whereClauses);
+        $query = "DELETE FROM `$dbTable` WHERE $whereSql";
+
+        $stmt = $this->pdo->prepare($query);
+        return $stmt->execute($params);
     }
 
     /**
@@ -49,7 +123,10 @@ class DatabaseHandler
         }
     }
 
-    public function existingData($dbTable, $dbColumn, $value)
+    /**
+     * @throws Exception
+     */
+    public function existingData($dbTable, $dbColumn, $value): bool
     {
         $this->validateTableAndColumn($dbTable, $dbColumn);
 
@@ -58,7 +135,7 @@ class DatabaseHandler
         $stmt->execute();
         $count = $stmt->fetchColumn();
 
-        return $count > 0;
+        return $count;
     }
 
     /**
@@ -215,7 +292,10 @@ class DatabaseHandler
         return $insertStmt ? $this->pdo->lastInsertId() : false;
     }
 
-    public function updateData($dbTable, $dbColumn, $newRecord, $condition, $id)
+    /**
+     * @throws Exception
+     */
+    public function updateData($dbTable, $dbColumn, $newRecord, $condition, $id): bool
     {
         $this->validateTableAndColumn($dbTable, $dbColumn);
         $this->validateTableAndColumn($dbTable, $condition);
@@ -229,7 +309,7 @@ class DatabaseHandler
         return $updated;
     }
 
-    public function update($dbTable, $dbColumn, $newRecord)
+    public function update($dbTable, $dbColumn, $newRecord): bool
     {
         $this->validateTableAndColumn($dbTable, $dbColumn);
 
@@ -262,6 +342,9 @@ class DatabaseHandler
         return $insertStmt ? $this->pdo->lastInsertId() : false;
     }
 
+    /**
+     * @throws Exception
+     */
     public function getAllUser()
     {
         $this->validateTableAndColumn('users');
@@ -274,6 +357,9 @@ class DatabaseHandler
         return $getId ?: false;
     }
 
+    /**
+     * @throws Exception
+     */
     public function insertCategoryTags($tbName, $title, $desc, $url)
     {
         $this->validateTableAndColumn($tbName);
@@ -288,6 +374,9 @@ class DatabaseHandler
         return $insertStmt ? $this->pdo->lastInsertId() : false;
     }
 
+    /**
+     * @throws Exception
+     */
     public function insertStaff($email, $password)
     {
         $this->validateTableAndColumn('staff');
@@ -301,6 +390,9 @@ class DatabaseHandler
         return $insertStmt ? $this->pdo->lastInsertId() : false;
     }
 
+    /**
+     * @throws Exception
+     */
     public function insertContact($firstName, $lastName, $email, $phone_code, $phone)
     {
         $this->validateTableAndColumn('users');
@@ -317,6 +409,9 @@ class DatabaseHandler
         return $insertStmt ? $this->pdo->lastInsertId() : false;
     }
 
+    /**
+     * @throws Exception
+     */
     public function insertProduct($name, $category_id, $subcategory, $tags, $description, $basicZip, $fullZip, $wordpressZip, $shopifyZip, $live_url, $youtube_link, $bootstrap_v, $webserver_com, $database_server, $php_v, $basicPrice, $fullPrice, $wordpress_price, $shopify_price, $wix, $discount, $product_url, $product_img)
     {
         $this->validateTableAndColumn('products');

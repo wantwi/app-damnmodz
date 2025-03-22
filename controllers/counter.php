@@ -14,15 +14,12 @@ $res = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
+    if (isset($authUser['sub'])) {
 
-
-    if (isset($authUser['user_id'])) {
-        $user = $dbHandler->selectData('users', 'id', $authUser['user_id']);
+        $user = $dbHandler->selectData('users', 'id', $authUser['sub']);
 
         if (!empty($user)) {
             if ($user['type'] === 'admin') {
-
-
 
                 $newOrder = $dbHandler->existingData('products', 'status', 'new');
                 $ongoing = $dbHandler->existingData('products', 'status', 'ongoing');
