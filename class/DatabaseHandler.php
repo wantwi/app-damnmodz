@@ -36,6 +36,7 @@ class DatabaseHandler
 
     /**
      * Validate table and column names dynamically.
+     * @throws Exception
      */
     protected function validateTableAndColumn($table, $column = null)
     {
@@ -60,17 +61,21 @@ class DatabaseHandler
         return $count > 0;
     }
 
+    /**
+     * @throws Exception
+     */
     public function countData($dbTable)
     {
         $this->validateTableAndColumn($dbTable);
 
         $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM `$dbTable`");
         $stmt->execute();
-        $count = $stmt->fetchColumn();
-
-        return $count;
+        return $stmt->fetchColumn();
     }
 
+    /**
+     * @throws Exception
+     */
     public function countDataMultiple($dbTable, $conditions = [])
     {
         $this->validateTableAndColumn($dbTable);
@@ -100,9 +105,7 @@ class DatabaseHandler
         }
 
         $stmt->execute();
-        $count = $stmt->fetchColumn();
-
-        return $count;
+        return $stmt->fetchColumn();
     }
 
     public function executeCustomQuery($query, $params = [])
@@ -130,6 +133,9 @@ class DatabaseHandler
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function selectAllData($dbTable, $condition = '')
     {
         $this->validateTableAndColumn($dbTable);
@@ -146,6 +152,9 @@ class DatabaseHandler
         return $selectTable ?: false;
     }
 
+    /**
+     * @throws Exception
+     */
     public function selectData($dbTable, $dbColumn, $condition)
     {
         $this->validateTableAndColumn($dbTable, $dbColumn);
@@ -159,6 +168,9 @@ class DatabaseHandler
         return $selectTable ?: false;
     }
 
+    /**
+     * @throws Exception
+     */
     public function insertData($tbName, $dbColumn, $value)
     {
         $this->validateTableAndColumn($tbName, $dbColumn);
@@ -171,6 +183,9 @@ class DatabaseHandler
         return $insertStmt ? $this->pdo->lastInsertId() : false;
     }
 
+    /**
+     * @throws Exception
+     */
     public function insertTheData($tbName, $dbColumn, $value)
     {
         $this->validateTableAndColumn($tbName, $dbColumn);
@@ -183,6 +198,9 @@ class DatabaseHandler
         return $insertStmt ? $this->pdo->lastInsertId() : false;
     }
 
+    /**
+     * @throws Exception
+     */
     public function insertTwoData($tbName, $dbColumn, $dbColumn2, $value, $value2)
     {
         $this->validateTableAndColumn($tbName, $dbColumn);
