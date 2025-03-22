@@ -41,7 +41,8 @@ class DatabaseHandler
         }
 
         $whereSql = $whereClauses ? "WHERE " . implode(" AND ", $whereClauses) : "";
-        $query = "SELECT * FROM `$dbTable` $whereSql";
+        $query = /** @lang text */
+            "SELECT * FROM `$dbTable` $whereSql";
 
         $stmt = $this->pdo->prepare($query);
         $stmt->execute($params);
@@ -53,12 +54,16 @@ class DatabaseHandler
     {
         $columns = implode("`, `", array_keys($data));
         $placeholders = ":" . implode(", :", array_keys($data));
-        $query = "INSERT INTO `$dbTable` (`$columns`) VALUES ($placeholders)";
+        $query = /** @lang text */
+            "INSERT INTO `$dbTable` (`$columns`) VALUES ($placeholders)";
 
         $stmt = $this->pdo->prepare($query);
         return $stmt->execute($data) ? $this->pdo->lastInsertId() : false;
     }
 
+    /**
+     * @throws Exception
+     */
     public function updateAsync($dbTable, array $data, array $conditions): bool
     {
         $setClauses = [];
@@ -81,7 +86,8 @@ class DatabaseHandler
 
         $setSql = implode(", ", $setClauses);
         $whereSql = implode(" AND ", $whereClauses);
-        $query = "UPDATE `$dbTable` SET $setSql WHERE $whereSql";
+        $query = /** @lang text */
+            "UPDATE `$dbTable` SET $setSql WHERE $whereSql";
 
         $stmt = $this->pdo->prepare($query);
         return $stmt->execute($params);
@@ -102,7 +108,8 @@ class DatabaseHandler
         }
 
         $whereSql = implode(" AND ", $whereClauses);
-        $query = "DELETE FROM `$dbTable` WHERE $whereSql";
+        $query = /** @lang text */
+            "DELETE FROM `$dbTable` WHERE $whereSql";
 
         $stmt = $this->pdo->prepare($query);
         return $stmt->execute($params);
@@ -126,16 +133,14 @@ class DatabaseHandler
     /**
      * @throws Exception
      */
-    public function existingData($dbTable, $dbColumn, $value): bool
+    public function existingData($dbTable, $dbColumn, $value)
     {
         $this->validateTableAndColumn($dbTable, $dbColumn);
 
-        $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM `$dbTable` WHERE `$dbColumn` = :val");
+        $stmt = $this->pdo->prepare(/** @lang text */ "SELECT COUNT(*) FROM `$dbTable` WHERE `$dbColumn` = :val");
         $stmt->bindParam(":val", $value);
         $stmt->execute();
-        $count = $stmt->fetchColumn();
-
-        return $count;
+        return $stmt->fetchColumn();
     }
 
     /**
@@ -145,7 +150,7 @@ class DatabaseHandler
     {
         $this->validateTableAndColumn($dbTable);
 
-        $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM `$dbTable`");
+        $stmt = $this->pdo->prepare(/** @lang text */ "SELECT COUNT(*) FROM `$dbTable`");
         $stmt->execute();
         return $stmt->fetchColumn();
     }
@@ -157,7 +162,8 @@ class DatabaseHandler
     {
         $this->validateTableAndColumn($dbTable);
 
-        $query = "SELECT COUNT(*) FROM `$dbTable`";
+        $query = /** @lang text */
+            "SELECT COUNT(*) FROM `$dbTable`";
 
         if (!empty($conditions)) {
             $whereClause = [];
@@ -217,7 +223,8 @@ class DatabaseHandler
     {
         $this->validateTableAndColumn($dbTable);
 
-        $selectQuery = "SELECT * FROM `$dbTable`";
+        $selectQuery = /** @lang text */
+            "SELECT * FROM `$dbTable`";
         if (!empty($condition)) {
             $selectQuery .= " $condition";
         }
@@ -236,7 +243,8 @@ class DatabaseHandler
     {
         $this->validateTableAndColumn($dbTable, $dbColumn);
 
-        $selectQuery = "SELECT * FROM `$dbTable` WHERE `$dbColumn` = :condition";
+        $selectQuery = /** @lang text */
+            "SELECT * FROM `$dbTable` WHERE `$dbColumn` = :condition";
         $selectStmt = $this->pdo->prepare($selectQuery);
         $selectStmt->bindParam(':condition', $condition);
         $selectStmt->execute();
@@ -252,12 +260,13 @@ class DatabaseHandler
     {
         $this->validateTableAndColumn($tbName, $dbColumn);
 
-        $insertQuery = "INSERT INTO `$tbName` (`$dbColumn`) VALUES (:val)";
+        $insertQuery = /** @lang text */
+            "INSERT INTO `$tbName` (`$dbColumn`) VALUES (:val)";
         $insertStmt = $this->pdo->prepare($insertQuery);
         $insertStmt->bindParam(':val', $value);
         $insertStmt->execute();
 
-        return $insertStmt ? $this->pdo->lastInsertId() : false;
+        return $this->pdo->lastInsertId();
     }
 
     /**
@@ -267,12 +276,13 @@ class DatabaseHandler
     {
         $this->validateTableAndColumn($tbName, $dbColumn);
 
-        $insertQuery = "INSERT INTO `$tbName` (`$dbColumn`) VALUES (:val)";
+        $insertQuery = /** @lang text */
+            "INSERT INTO `$tbName` (`$dbColumn`) VALUES (:val)";
         $insertStmt = $this->pdo->prepare($insertQuery);
         $insertStmt->bindParam(':val', $value);
         $insertStmt->execute();
 
-        return $insertStmt ? $this->pdo->lastInsertId() : false;
+        return $this->pdo->lastInsertId();
     }
 
     /**
@@ -283,13 +293,14 @@ class DatabaseHandler
         $this->validateTableAndColumn($tbName, $dbColumn);
         $this->validateTableAndColumn($tbName, $dbColumn2);
 
-        $insertQuery = "INSERT INTO `$tbName` (`$dbColumn`, `$dbColumn2`) VALUES (:val, :val2)";
+        $insertQuery = /** @lang text */
+            "INSERT INTO `$tbName` (`$dbColumn`, `$dbColumn2`) VALUES (:val, :val2)";
         $insertStmt = $this->pdo->prepare($insertQuery);
         $insertStmt->bindParam(':val', $value);
         $insertStmt->bindParam(':val2', $value2);
         $insertStmt->execute();
 
-        return $insertStmt ? $this->pdo->lastInsertId() : false;
+        return $this->pdo->lastInsertId();
     }
 
     /**
@@ -300,32 +311,37 @@ class DatabaseHandler
         $this->validateTableAndColumn($dbTable, $dbColumn);
         $this->validateTableAndColumn($dbTable, $condition);
 
-        $updateQuery = "UPDATE `$dbTable` SET `$dbColumn` = :newRecord WHERE `$condition` = :id";
+        $updateQuery = /** @lang text */
+            "UPDATE `$dbTable` SET `$dbColumn` = :newRecord WHERE `$condition` = :id";
         $updateStmt = $this->pdo->prepare($updateQuery);
         $updateStmt->bindParam(':newRecord', $newRecord);
         $updateStmt->bindParam(':id', $id);
-        $updated = $updateStmt->execute();
-
-        return $updated;
+        return $updateStmt->execute();
     }
 
+    /**
+     * @throws Exception
+     */
     public function update($dbTable, $dbColumn, $newRecord): bool
     {
         $this->validateTableAndColumn($dbTable, $dbColumn);
 
-        $updateQuery = "UPDATE `$dbTable` SET `$dbColumn` = :newRecord";
+        $updateQuery = /** @lang text */
+            "UPDATE `$dbTable` SET `$dbColumn` = :newRecord";
         $updateStmt = $this->pdo->prepare($updateQuery);
         $updateStmt->bindParam(':newRecord', $newRecord);
-        $updated = $updateStmt->execute();
-
-        return $updated;
+        return $updateStmt->execute();
     }
 
+    /**
+     * @throws Exception
+     */
     public function insertUser($firstName, $lastName, $email, $password, $country, $type, $last_login, $joined, $email_token, $remember_token)
     {
         $this->validateTableAndColumn('users');
 
-        $insertQuery = "INSERT INTO `users` (firstName, lastName, email, country, password, type, online, last_login, joined, email_token, remember_token) VALUES (:firstName, :lastName, :email, :country, :password, :type, '1', :last_login, :joined, :email_token, :remember_token)";
+        $insertQuery = /** @lang text */
+            "INSERT INTO `users` (firstName, lastName, email, country, password, type, online, last_login, joined, email_token, remember_token) VALUES (:firstName, :lastName, :email, :country, :password, :type, '1', :last_login, :joined, :email_token, :remember_token)";
         $insertStmt = $this->pdo->prepare($insertQuery);
         $insertStmt->bindParam(':firstName', $firstName);
         $insertStmt->bindParam(':lastName', $lastName);
@@ -349,7 +365,8 @@ class DatabaseHandler
     {
         $this->validateTableAndColumn('users');
 
-        $selectQuery = "SELECT * FROM `users`";
+        $selectQuery = /** @lang text */
+            "SELECT * FROM `users`";
         $selectStmt = $this->pdo->prepare($selectQuery);
         $selectStmt->execute();
         $getId = $selectStmt->fetchAll(PDO::FETCH_ASSOC);
@@ -364,14 +381,15 @@ class DatabaseHandler
     {
         $this->validateTableAndColumn($tbName);
 
-        $insertQuery = "INSERT INTO `$tbName` (name, description, url) VALUES (:name, :description, :url)";
+        $insertQuery = /** @lang text */
+            "INSERT INTO `$tbName` (name, description, url) VALUES (:name, :description, :url)";
         $insertStmt = $this->pdo->prepare($insertQuery);
         $insertStmt->bindParam(':name', $title);
         $insertStmt->bindParam(':description', $desc);
         $insertStmt->bindParam(':url', $url);
         $insertStmt->execute();
 
-        return $insertStmt ? $this->pdo->lastInsertId() : false;
+        return $this->pdo->lastInsertId();
     }
 
     /**
@@ -381,13 +399,14 @@ class DatabaseHandler
     {
         $this->validateTableAndColumn('staff');
 
-        $insertQuery = "INSERT INTO `staff` (email, password) VALUES (:email, :password)";
+        $insertQuery = /** @lang text */
+            "INSERT INTO `staff` (email, password) VALUES (:email, :password)";
         $insertStmt = $this->pdo->prepare($insertQuery);
         $insertStmt->bindParam(':email', $email);
         $insertStmt->bindParam(':password', $password);
         $insertStmt->execute();
 
-        return $insertStmt ? $this->pdo->lastInsertId() : false;
+        return $this->pdo->lastInsertId();
     }
 
     /**
@@ -397,7 +416,8 @@ class DatabaseHandler
     {
         $this->validateTableAndColumn('users');
 
-        $insertQuery = "INSERT INTO `users` (first_name, last_name, email, phone_code, phone) VALUES (:first_name, :last_name, :email, :phone_code, :phone)";
+        $insertQuery = /** @lang text */
+            "INSERT INTO `users` (first_name, last_name, email, phone_code, phone) VALUES (:first_name, :last_name, :email, :phone_code, :phone)";
         $insertStmt = $this->pdo->prepare($insertQuery);
         $insertStmt->bindParam(':first_name', $firstName);
         $insertStmt->bindParam(':last_name', $lastName);
@@ -406,7 +426,7 @@ class DatabaseHandler
         $insertStmt->bindParam(':phone', $phone);
         $insertStmt->execute();
 
-        return $insertStmt ? $this->pdo->lastInsertId() : false;
+        return $this->pdo->lastInsertId();
     }
 
     /**
@@ -446,23 +466,29 @@ class DatabaseHandler
         return $insertStmt ? $this->pdo->lastInsertId() : false;
     }
 
-    public function deleteData($dbName, $dbColumn, $condition)
+    /**
+     * @throws Exception
+     */
+    public function deleteData($dbName, $dbColumn, $condition): bool
     {
         $this->validateTableAndColumn($dbName, $dbColumn);
 
-        $deleteQuery = "DELETE FROM `$dbName` WHERE `$dbColumn` = :condition";
+        $deleteQuery = /** @lang text */
+            "DELETE FROM `$dbName` WHERE `$dbColumn` = :condition";
         $deleteStmt = $this->pdo->prepare($deleteQuery);
         $deleteStmt->bindParam(':condition', $condition);
-        $deleted = $deleteStmt->execute();
-
-        return $deleted;
+        return $deleteStmt->execute();
     }
 
-    public function onlineStatusUpdate($dbName, $condition, $userId)
+    /**
+     * @throws Exception
+     */
+    public function onlineStatusUpdate($dbName, $condition, $userId): bool
     {
         $this->validateTableAndColumn($dbName, $condition);
 
-        $query = "UPDATE `$dbName` SET last_seen = NOW() WHERE `$condition` = :user_id";
+        $query = /** @lang text */
+            "UPDATE `$dbName` SET last_seen = NOW() WHERE `$condition` = :user_id";
         $stmt = $this->pdo->prepare($query);
         $stmt->bindParam(':user_id', $userId);
         return $stmt->execute();

@@ -25,7 +25,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 $ongoing = $dbHandler->existingData('products', 'status', 'ongoing');
                 $orders = $dbHandler->countData('products', '');
                 $users = $dbHandler->existingData('users', 'type', 'user');
-                $completedOrders = $dbHandler->countData('products', "WHERE status = 'completed'");
+                $completedOrders = $dbHandler->countDataMultiple('products', [
+                    'status' => 'completed'
+                ]);
 
                 if (isset($_GET['get']) && isset($_GET['id'])) {
                     $supplierId = (int)$_GET['id'];
