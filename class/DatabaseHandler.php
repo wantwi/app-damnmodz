@@ -158,6 +158,42 @@ class DatabaseHandler
     /**
      * @throws Exception
      */
+    public function countDataWithConditions($dbTable, array $conditions = [])
+    {
+        $this->validateTableAndColumn($dbTable);
+
+        // Base query
+        $query = /** @lang text */
+            "SELECT COUNT(*) as total FROM `$dbTable`";
+
+        if (!empty($conditions)) {
+            $whereClauses = [];
+            foreach ($conditions as $condition) {
+                $this->validateTableAndColumn($dbTable, $condition['column']);
+
+                $whereClauses[] = "`{$condition['column']}` {$condition['operator']} :{$condition['column']}";
+            }
+            $query .= " WHERE " . implode(' AND ', $whereClauses);
+        }
+
+        $stmt = $this->pdo->prepare($query);
+
+        if (!empty($conditions)) {
+            foreach ($conditions as $condition) {
+                $stmt->bindValue(
+                    ":{$condition['column']}",
+                    $condition['value'],
+                    is_int($condition['value']) ? \PDO::PARAM_INT : \PDO::PARAM_STR
+                );
+            }
+        }
+        $stmt->execute();
+        return $stmt->fetchColumn();
+    }
+
+    /**
+     * @throws Exception
+     */
     public function countDataMultiple($dbTable, $conditions = [])
     {
         $this->validateTableAndColumn($dbTable);
