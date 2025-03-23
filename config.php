@@ -64,13 +64,13 @@
 //}
 //
 ////session_start();
-//
+
 // Database Defines
 define('DB_HOST', 'localhost');
 define('DB_USERNAME', 'root');
 define('DB_NAME', 'damnmodz');
 define('DB_PASSWORD', '');
-//
+
 //// define('DB_HOST', 'localhost');
 //// define('DB_USERNAME', 'ttgstaff_root');
 //// define('DB_NAME', 'ttgstaff_database');
