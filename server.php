@@ -1,9 +1,32 @@
 <?php
-require_once './config.php';
+use config\Config;
+
+require_once './config/Config.php';
+
+$config = Config::getInstance();
+$pdo = $config->getPDO();
+$dbHandler = $config->getDbHandler();
+$authUser = $config->getAuthUser();
+$utils = $config->getUtils();
+
+
 $currentDatetime = date("Y-m-d H:i:s");
 
 if(isset($_GET['all'])){
-     $orders = $apiHandler->getAllOrders();
+
+    $wcSecreteKey = $config->getSetting('wc_secrete_key');
+    $wcConsumerKey = $config->getSetting('wc_consumer_key');
+    $wcStore = $config->getSetting('wc_store');
+
+    if (empty($wcSecreteKey) || empty($wcConsumerKey) || empty($wcStore)) {
+        error_log("WooCommerce API keys are missing or invalid.");
+        throw new Exception("WooCommerce API keys are missing or invalid.");
+    }
+
+    $apiHandler = new ApiHandler($wcSecreteKey, $wcConsumerKey, $wcStore);
+
+
+    $orders = $apiHandler->getAllOrders();
     if (empty($orders)) {
             foreach ($orders as $order) {
                 // check if order_id already exists
