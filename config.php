@@ -48,6 +48,8 @@
 //    header("Access-Control-Allow-Headers: Content-Type, Authorization");
 //    header('Access-Control-Max-Age: 86400');  // Cache for 1 day
 //}
+
+
 //
 //if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 //    if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'])) {
