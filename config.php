@@ -43,7 +43,7 @@ $allowed_origins = ['https://portal.damnmodz.com', 'https://damnmodz.com', 'http
 //
 //
 if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $allowed_origins)) {
-   header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
+   header("Access-Control-Allow-Origin:*");
    header('Access-Control-Allow-Credentials: true');
    header("Access-Control-Allow-Headers: Content-Type, Authorization");
    header('Access-Control-Max-Age: 86400');  // Cache for 1 day
@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 
    if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'])) {
        header("Access-Control-Allow-Headers: Authorization, Content-Type, X-Requested-With");
-   }
+   }    
 
    exit(0);
 }
