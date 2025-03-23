@@ -12,7 +12,7 @@
 //
 //// Allowed origins for CORS
 //// Allow from any origin
-//$allowed_origins = ['https://portal.damnmodz.com', 'https://damnmodz.com', 'http://localhost:5173'];
+$allowed_origins = ['https://portal.damnmodz.com', 'https://damnmodz.com', 'http://localhost:5173'];
 ////$allowed_domains = ['portal.damnmodz.com', 'damnmodz.com', 'localhost:5173'];
 //
 //// Check the Referer header
@@ -42,24 +42,24 @@
 //
 //
 //
-//if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $allowed_origins)) {
-//    header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
-//    header('Access-Control-Allow-Credentials: true');
-//    header("Access-Control-Allow-Headers: Content-Type, Authorization");
-//    header('Access-Control-Max-Age: 86400');  // Cache for 1 day
-//}
+if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $allowed_origins)) {
+   header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
+   header('Access-Control-Allow-Credentials: true');
+   header("Access-Control-Allow-Headers: Content-Type, Authorization");
+   header('Access-Control-Max-Age: 86400');  // Cache for 1 day
+}
 //
-//if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-//    if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'])) {
-//        header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");  // Add all necessary methods
-//    }
-//
-//    if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'])) {
-//        header("Access-Control-Allow-Headers: Authorization, Content-Type, X-Requested-With");
-//    }
-//
-//    exit(0);
-//}
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+   if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'])) {
+       header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");  // Add all necessary methods
+   }
+
+   if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'])) {
+       header("Access-Control-Allow-Headers: Authorization, Content-Type, X-Requested-With");
+   }
+
+   exit(0);
+}
 //
 ////session_start();
 //
