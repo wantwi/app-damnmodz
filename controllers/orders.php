@@ -682,6 +682,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             echo json_encode($responseData);
             exit();
         }
+        else{
+            $responseData =[
+                "status"=>false,
+                "message"=> 'User not found',
+            ];
+            echo json_encode($responseData);
+            exit();
+        }
     }else{
         $responseData =[
             "status"=>false,
