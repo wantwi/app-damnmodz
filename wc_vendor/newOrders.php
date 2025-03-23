@@ -1,5 +1,14 @@
 <?php
 require_once '../config.php';
+use config\Config;
+
+require_once '../config/Config.php';
+
+$config = Config::getInstance();
+$pdo = $config->getPDO();
+$dbHandler = $config->getDbHandler();
+$authUser = $config->getAuthUser();
+$utils = $config->getUtils();
 
 
 // WooCommerce webhook secret for verification (if set)
@@ -26,6 +35,19 @@ if ($webhook_secret && isset($headers['X-Wc-Webhook-Signature'])) {
     }
 
     if ($headers['X-Wc-Webhook-Topic'] === 'order.created' || $headers['X-Wc-Webhook-Topic'] === 'order.updated') {
+
+        $wcSecreteKey = $config->getSetting('wc_secrete_key');
+        $wcConsumerKey = $config->getSetting('wc_consumer_key');
+        $wcStore = $config->getSetting('wc_store');
+
+        if (empty($wcSecreteKey) || empty($wcConsumerKey) || empty($wcStore)) {
+            error_log("WooCommerce API keys are missing or invalid.");
+            throw new Exception("WooCommerce API keys are missing or invalid.");
+        }
+
+        $apiHandler = new ApiHandler($wcSecreteKey, $wcConsumerKey, $wcStore);
+
+
         $orders = $apiHandler->getAllOrders();
         newLogs('woo', "Webhook created successfully", 'success');
         if (!empty($orders)) {
@@ -34,7 +56,7 @@ if ($webhook_secret && isset($headers['X-Wc-Webhook-Signature'])) {
                 $dataOrder = $dbHandler->existingData('orders', 'wc_id', $order['id']);
                 if ($order['status'] === 'processing') {
                     //for orders
-                    if ($dataOrder[0] === 0) {
+                    if ($dataOrder === 0) {
                         $insertData = $dbHandler->insertData('orders', 'wc_id', $order['id']);
 
                         if ($insertData) {

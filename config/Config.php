@@ -7,13 +7,16 @@ require_once __DIR__ . '/../class/DatabaseConnect.php';
 require_once __DIR__ . '/../class/DatabaseHandler.php';
 require_once __DIR__ . '/../class/Request.php';
 require_once __DIR__ . '/../class/AuthMiddleware.php';
+require_once __DIR__ . '/../class/ApiHandler.php';
 
+use ApiHandler;
 use AuthMiddleware;
 use DatabaseConnection;
 use DatabaseHandler;
 use Exception;
 use PDO;
 use Request;
+use Utils;
 
 class Config
 {
@@ -59,13 +62,9 @@ class Config
         error_log("Settings loaded successfully");
     }
 
-    private function loadAuthUser()
+    public function getUtils()
     {
-        if (self::$authUser !== null) {
-            return; // Prevent reloading if already set
-        }
-
-        self::$authUser = AuthMiddleware::validateToken();
+        return new Utils();
     }
 
     private function handleCORS()

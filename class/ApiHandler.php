@@ -1,4 +1,5 @@
 <?php
+require_once '../config.php';
 
 class ApiHandler
 {
@@ -6,11 +7,11 @@ class ApiHandler
     private $consumerKey;
     private $store;
 
-    public function __construct()
+    public function __construct($secreteKey, $consumerKey, $store)
     {
-        $this->secreteKey = WC_SECRETE_KEY;
-        $this->consumerKey = WC_CONSUMER_KEY;
-        $this->store = WC_STORE;
+        $this->secreteKey = $secreteKey;
+        $this->consumerKey = $consumerKey;
+        $this->store = $store;
     }
 
 public function getAllOrders(){

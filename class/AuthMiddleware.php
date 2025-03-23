@@ -49,6 +49,10 @@ class AuthMiddleware
                 throw new Exception("Invalid token payload");
             }
 
+            if (isset($payload['exp']) && $payload['exp'] < time()) {
+                throw new Exception("Token has expired");
+            }
+
             return $payload;
         } catch (Exception $e) {
             http_response_code(401);

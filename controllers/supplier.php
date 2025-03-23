@@ -1,5 +1,13 @@
 <?php
-require_once '../config.php';
+use config\Config;
+
+require_once '../config/Config.php';
+
+$config = Config::getInstance();
+$pdo = $config->getPDO();
+$dbHandler = $config->getDbHandler();
+$authUser = $config->getAuthUser();
+$utils = $config->getUtils();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     //Check and process entered data
