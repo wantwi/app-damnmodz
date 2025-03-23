@@ -26,9 +26,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 if ($_GET['view'] === 'ongoingHome') {
                     $selectQuery = /** @lang text */
                         "SELECT p.*, u.name FROM products p JOIN users u ON p.supplier_id = u.id WHERE p.status = 'ongoing' ORDER BY `p`.`dated` DESC LIMIT 50;";
-                    $selectStmt = $pdo->prepare($selectQuery);
-                    $selectStmt->execute();
-                    $allOngoingOrders = $selectStmt->fetchAll(PDO::FETCH_ASSOC);
+                    $allOngoingOrders = $dbHandler->executeCustomQuery($selectQuery);
+
+//                    $selectStmt = $pdo->prepare($selectQuery);
+//                    $selectStmt->execute();
+//                    $allOngoingOrders = $selectStmt->fetchAll(PDO::FETCH_ASSOC);
                     if (!empty($allOngoingOrders)) {
                         $responseData =[
                             "status" => true,

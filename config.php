@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 }
 //
 ////session_start();
-//
+
 // Database Defines
 define('DB_HOST', 'localhost');
 define('DB_USERNAME', 'root');

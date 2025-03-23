@@ -21,7 +21,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
             if(isset($_GET['live'])){
                 //$key = verify_key($_GET['id']);
-                $nots = $dbHandler->selectData('notifications', 'seen = 0 AND user_id', "$id");
+                $conditions = ['seen' => 0, 'user_id' => $id];
+                $nots = $dbHandler->selectAsync('notifications', $conditions);
+                //$nots = $dbHandler->selectData('notifications', 'seen = 0 AND user_id', "$id");
                 $userTimeZone = isset($_GET['time']) ? $_GET['time'] : 'UTC';
                 if(!empty($nots)){
                     $dbHandler->updateData('notifications', 'seen', 1, 'id', $nots['id']);
@@ -43,7 +45,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
             if(isset($_GET['activity']) && $_GET['activity'] === 'admin'){
                 $user = $dbHandler->selectData('users', 'id', "$_GET[id]");
-                $nots = $dbHandler->selectData('notifications', 'seen = 0 AND user_id', "$_GET[id]");
+//                $nots = $dbHandler->selectData('notifications', 'seen = 0 AND user_id', "$_GET[id]");
+                $conditions = ['seen' => 0, 'user_id' => "$_GET[id]"];
+                $nots = $dbHandler->selectAsync('notifications', $conditions);
                 if(!empty($user) && !empty($user['notification_message'])){
                     $message = $user['notification_message'] . ' - '. timeago(date($user['notification_time']));
                     $dbHandler->updateData('users', 'notification_message', null, 'id', $_GET['id']);
