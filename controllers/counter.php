@@ -54,7 +54,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             if ($user['type'] === 'user') {
                 $supplierId = (int)$user['id'];
 
-                $selectQuery = "SELECT p.*, MAX(oc.wc_category_id) AS category_id
+                $selectQuery = /** @lang text */
+                    "SELECT p.*, MAX(oc.wc_category_id) AS category_id
                                 FROM products p
                                 JOIN orders o ON p.order_id = o.wc_id
                                 JOIN orders_categories oc ON o.wc_id = oc.wc_order_id
