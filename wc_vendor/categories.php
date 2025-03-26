@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 foreach ($prodcuts_categories as $category){
                     $existingData = $dbHandler->existingData('categories', 'wc_id', $category['id']);
 
-                    if ($existingData[0] === 0) {
+                    if ($existingData === 0) {
                         $insert = $dbHandler->insertData('categories', 'wc_id', $category['id']);
 
                         if($insert){
