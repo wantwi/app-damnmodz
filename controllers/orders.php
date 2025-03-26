@@ -27,15 +27,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                     $selectQuery = /** @lang text */
                         "SELECT p.*, u.name FROM products p JOIN users u ON p.supplier_id = u.id WHERE p.status = 'ongoing' ORDER BY `p`.`dated` DESC LIMIT 50;";
                     $allOngoingOrders = $dbHandler->executeCustomQuery($selectQuery);
+                    // echo json_encode($allOngoingOrders, JSON_PARTIAL_OUTPUT_ON_ERROR | JSON_UNESCAPED_UNICODE);
+                   
 
 //                    $selectStmt = $pdo->prepare($selectQuery);
 //                    $selectStmt->execute();
 //                    $allOngoingOrders = $selectStmt->fetchAll(PDO::FETCH_ASSOC);
                     if (!empty($allOngoingOrders)) {
+
                         $responseData =[
                             "status" => true,
                             "data"=> $allOngoingOrders
                         ];
+
+                        echo json_encode($responseData, JSON_PARTIAL_OUTPUT_ON_ERROR | JSON_UNESCAPED_UNICODE);
+                        exit();
                     }
                 }
 
@@ -47,6 +53,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                             "status" => true,
                             "data"=> $ongoingOrders
                         ];
+
+                        echo json_encode($responseData, JSON_PARTIAL_OUTPUT_ON_ERROR | JSON_UNESCAPED_UNICODE);
+                        exit();
                     }
                 }
 
@@ -241,6 +250,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                         "totalRows" => $totalRows,
                         "currentPage" => $page,
                     ];
+                    echo json_encode($responseData, JSON_PARTIAL_OUTPUT_ON_ERROR | JSON_UNESCAPED_UNICODE);
+                    exit();
                 }
 
                 // Completed Order
@@ -275,6 +286,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                         "totalRows" => $totalRows,
                         "currentPage" => $page,
                     ];
+
+                    echo json_encode($responseData, JSON_PARTIAL_OUTPUT_ON_ERROR | JSON_UNESCAPED_UNICODE);
+                    exit();
                 }
 
 
@@ -639,6 +653,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                         "status" => true,
                         "data"=> $allOngoingOrders
                     ];
+
+                    //echo json_encode($responseData, JSON_PARTIAL_OUTPUT_ON_ERROR | JSON_UNESCAPED_UNICODE);
+                    //exit();
                 }
             }
 
