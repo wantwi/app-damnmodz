@@ -883,11 +883,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
                             newLogs('woo', "Trustpilot mail sent for order #$product[order_id]",'success');
                         }
 
-                        $orderCount = $dbHandler->countData('products', "WHERE order_id =".$product['order_id']." AND status != 'completed'");
+                        $conditions = [
+                            ['column' => 'order_id', 'operator' => '=', 'value' => $product['order_id']],
+                            ['column' => 'status', 'operator' => '!=', 'value' => 'completed']
+                        ];
+                        $orderCount = $dbHandler->countDataWithConditions('products', $conditions);
+
+                      //  $orderCount = $dbHandler->countData('products', "WHERE order_id =".$product['order_id']." AND status != 'completed'");
 
                         $section_id = $apiHandler->getSectionId($product['order_id'], $product['wc_product_id']);
                         $apiHandler->updateMetaData($product['order_id'], $product['wc_product_id'], $section_id);
-                        if($orderCount[0] == 0){
+                        if($orderCount == 0){
                             $orderResponse = $apiHandler->updateOrder($product['order_id'], 'completed');
                         }else{
                             partialDelivery($product['customer_email'], $product['customer_name'], $product['product_name'], $product['order_id']);
