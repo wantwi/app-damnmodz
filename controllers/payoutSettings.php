@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                if(!empty($data['payoutName']) && !empty($data['payoutLabel'])){
                 //Check for existing data
                 $existingData = $dbHandler->existingData('payout_settings', 'payout_method', $data['payoutName']);
-                if($existingData[0]===0){
+                if($existingData === 0){
                      $insertData = $dbHandler->insertData('payout_settings', 'payout_method', $data['payoutName']);
                      if($insertData){
                          $update = $dbHandler-> updateData('payout_settings', 'label_value', $data['payoutLabel'], 'payout_method', $data['payoutName']);
@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
              if(isset($data['editPayout'])){
                  $getPayout = $dbHandler->existingData('payout_settings', 'payout_method', $data['payoutName']);
-                 if($getPayout[0]===1){
+                 if($getPayout===1){
                      $update=$dbHandler->updateData('payout_settings', 'payout_method', $data['payoutName'], 'id', $data['payoutId']);
                      $update=$dbHandler->updateData('payout_settings', 'label_value', $data['payoutLabel'], 'id', $data['payoutId']);
                      
