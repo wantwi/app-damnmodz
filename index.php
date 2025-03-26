@@ -17,7 +17,8 @@ if(isset($_GET['id'])){
 
 // Function to fetch new orders
 function getNewOrders($pdo) {
-    $query = "SELECT * FROM products WHERE status = 'new' ORDER BY `products`.`id` DESC;";
+    $query = /** @lang text */
+        "SELECT * FROM products WHERE status = 'new' ORDER BY `products`.`id` DESC;";
     $stmt = $pdo->prepare($query);
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -25,14 +26,16 @@ function getNewOrders($pdo) {
 
 // Function to fetch ongoing orders
 function getOngoingOrders($pdo) {
-    $query = "SELECT p.*, u.name FROM products p JOIN users u ON p.supplier_id = u.id WHERE p.status = 'ongoing' ORDER BY `p`.`dated` DESC LIMIT 50;";
+    $query = /** @lang text */
+        "SELECT p.*, u.name FROM products p JOIN users u ON p.supplier_id = u.id WHERE p.status = 'ongoing' ORDER BY `p`.`dated` DESC LIMIT 50;";
     $stmt = $pdo->prepare($query);
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 function adminOngoingOrders($pdo) {
-    $query = "SELECT p.*, u.name FROM products p JOIN users u ON p.supplier_id = u.id WHERE p.status = 'ongoing' AND p.supplier_id = :supplier_id ORDER BY `p`.`dated` DESC;";
+    $query = /** @lang text */
+        "SELECT p.*, u.name FROM products p JOIN users u ON p.supplier_id = u.id WHERE p.status = 'ongoing' AND p.supplier_id = :supplier_id ORDER BY `p`.`dated` DESC;";
     $stmt = $pdo->prepare($query);
     $stmt->execute([':supplier_id' => $_GET['id']]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
